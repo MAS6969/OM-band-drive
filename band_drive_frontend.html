@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Band Drive</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #eee;
+    }
+    header {
+      background: #c40000;
+      padding: 20px;
+      text-align: center;
+      font-size: 2rem;
+      letter-spacing: 2px;
+    }
+    #fileList {
+      padding: 20px;
+    }
+    .file-item {
+      padding: 10px;
+      background: #222;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+    #uploadArea {
+      padding: 20px;
+      text-align: center;
+      border: 2px dashed #555;
+      margin: 20px;
+      border-radius: 10px;
+    }
+    #uploadArea:hover {
+      background: #1a1a1a;
+    }
+  </style>
+</head>
+<body>
+  <header>Band Drive</header>
+
+  <div id="uploadArea">
+    <p>Datei hierher ziehen oder klicken zum Hochladen</p>
+    <input type="file" id="fileInput" style="display:none" />
+  </div>
+
+  <div id="fileList"></div>
+
+  <script>
+    // === KONFIGURATION ===
+    const FOLDER_ID = "HIER_EURE_ORDNER_ID_EINFÜGEN"; // Google-Drive-Ordner-ID
+    const API_KEY = "HIER_API_KEY_EINFÜGEN";
+    const ACCESS_TOKEN = "HIER_ACCESS_TOKEN_EINFÜGEN"; // Für Upload nötig
+
+    // === DATEILISTE LADEN ===
+    async function loadFiles() {
+      const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents&key=${API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const list = document.getElementById("fileList");
+      list.innerHTML = "<h2>Dateien</h2>";
+      data.files.forEach(f => {
+        const item = document.createElement("div");
+        item.className = "file-item";
+        item.innerHTML = `<a href="https://drive.google.com/uc?id=${f.id}&export=download" target="_blank">${f.name}</a>`;
+        list.appendChild(item);
+      });
+    }
+
+    // === UPLOAD ===
+    async function uploadFile(file) {
+      const metadata = {
+        name: file.name,
+        parents: [FOLDER_ID]
+      };
+
+      const form = new FormData();
+      form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+      form.append("file", file);
+
+      const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${ACCESS_TOKEN}` },
+        body: form
+      });
+
+      if (res.ok) {
+        alert("Upload erfolgreich!");
+        loadFiles();
+      } else {
+        alert("Upload fehlgeschlagen");
+      }
+    }
+
+    // === DRAG & DROP / KLICK ===
+    const uploadArea = document.getElementById("uploadArea");
+    const fileInput = document.getElementById("fileInput");
+
+    uploadArea.onclick = () => fileInput.click();
+    fileInput.onchange = () => uploadFile(fileInput.files[0]);
+
+    uploadArea.ondrop = e => {
+      e.preventDefault();
+      uploadFile(e.dataTransfer.files[0]);
+    };
+    uploadArea.ondragover = e => e.preventDefault();
+
+    // Start
+    loadFiles();
+  </script>
+</body>
+</html>
