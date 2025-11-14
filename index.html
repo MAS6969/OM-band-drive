@@ -69,7 +69,7 @@
 
       <table id="foldersTable" aria-live="polite">
         <thead>
-          <tr><th>Running Songs</th><th>Leadsheet (PDF)</th><th>Media</th></tr>
+          <tr><th>Running songs</th><th>Leadsheet (PDF)</th><th>Media</th></tr>
         </thead>
         <tbody id="foldersBody">
           <tr><td colspan="3" class="muted">Noch keine Daten geladen.</td></tr>
@@ -125,35 +125,111 @@
 
       const { owner, repo, branch, path } = CONFIG;
       const refSegment = branch ? `?ref=${encodeURIComponent(branch)}` : "";
-      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}${refSegment}`;
+      const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(path)}${refSegment}`;
 
       try {
         const items = await apiFetch(apiUrl);
-        if (!Array.isArray(items)) throw new Error("Unerwartete Antwort von GitHub API.");
+
+        if (!Array.isArray(items)) {
+          const msg = items && items.message ? items.message : "Unerwartete Antwort von GitHub API.";
+          throw new Error(msg);
+        }
 
         const dirs = items.filter(i => i.type === "dir");
+
         if (dirs.length === 0) {
-          foldersBody.innerHTML = `<tr><td colspan="3" class="muted">Keine Unterordner gefunden.</td></tr>`;
+          foldersBody.innerHTML = `<tr><td colspan="3" class="muted">Keine Unterordner unter <code>/${path}</code> gefunden.</td></tr>`;
           setLoading(false);
           return;
         }
 
+        foldersBody.innerHTML = `<tr><td colspan="3" class="muted">Hole Details für ${dirs.length} Ordner…</td></tr>`;
+
+        // Für jeden Ordner PDFs abrufen
         const detailsPromises = dirs.map(async d => {
-          const dirApi = `https://api.github.com/repos/${owner}/${repo}/contents/${path}/${d.name}${refSegment}`;
+          const dirApi = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(path)}/${encodeURIComponent(d.name)}${refSegment}`;
           try {
             const c = await apiFetch(dirApi);
-            const pdfs = Array.isArray(c) ? c.filter(x => x.type === "file" && x.name.toLowerCase().endsWith(".pdf")) : [];
+
+            // Dateien im Ordner filtern (PDF)
+            const pdfs = Array.isArray(c) ? c
+              .filter(x => x.type === "file" && x.name.toLowerCase().endsWith(".pdf"))
+              .map(x => ({ name: x.name })) : [];
+
+            // Optional: PDFs in Unterordnern (eine Ebene tief) mitladen
+            const subdirs = Array.isArray(c) ? c.filter(x => x.type === "dir") : [];
+            for (const sd of subdirs) {
+              const subApi = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(path)}/${encodeURIComponent(d.name)}/${encodeURIComponent(sd.name)}${refSegment}`;
+              try {
+                const sc = await apiFetch(subApi);
+                const subPdfs = Array.isArray(sc) ? sc
+                  .filter(x => x.type === "file" && x.name.toLowerCase().endsWith(".pdf"))
+                  .map(x => ({ name: `${sd.name}/${x.name}` })) : [];
+                pdfs.push(...subPdfs);
+              } catch { /* ignoriere Unterordner-Fehler */ }
+            }
+
             return { name: d.name, pdfs };
-          } catch {
+          } catch (err) {
             return { name: d.name, pdfs: [] };
           }
         });
 
         const details = await Promise.all(detailsPromises);
+
         foldersBody.innerHTML = "";
         details.sort((a,b)=> a.name.localeCompare(b.name, undefined, {numeric:true}));
 
         details.forEach(d => {
           const row = document.createElement("tr");
 
-          const nameCell = document.create
+          // Spalte 1: Ordnername
+          const nameCell = document.createElement("td");
+          nameCell.innerHTML = `<strong>${escapeHtml(d.name)}</strong>`;
+
+          // Spalte 2: PDF-Dateinamen mit Links
+          const pdfCell = document.createElement("td");
+          if (d.pdfs.length > 0) {
+            pdfCell.innerHTML = d.pdfs.map(pdf => {
+              // Blob-Link für Vorschau auf GitHub:
+              const blobUrl = `https://github.com/${owner}/${repo}/blob/${branch}/${path}/${encodeURIComponent(d.name)}/${pdf.name.split('/').map(encodeURIComponent).join('/')}`;
+              // Alternativ: Direkt-RAW (öffnet im Browser/Download):
+              // const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}/${encodeURIComponent(d.name)}/${pdf.name.split('/').map(encodeURIComponent).join('/')}`;
+
+              return `<a class="folder-link" href="${blobUrl}" target="_blank" rel="noopener">${escapeHtml(pdf.name)}</a>`;
+            }).join("<br>");
+          } else {
+            pdfCell.innerHTML = `<span class="muted">Keine PDF-Datei</span>`;
+          }
+
+          // Spalte 3: Link zum Ordner
+          const linkCell = document.createElement("td");
+          const ghPath = `https://github.com/${owner}/${repo}/tree/${branch}/${path}/${encodeURIComponent(d.name)}`;
+          linkCell.innerHTML = `<a class="folder-link" href="${ghPath}" target="_blank" rel="noopener">Auf GitHub öffnen</a>`;
+
+          row.appendChild(nameCell);
+          row.appendChild(pdfCell);
+          row.appendChild(linkCell);
+          foldersBody.appendChild(row);
+        });
+
+        setLoading(false, "Fertig");
+      } catch (err) {
+        showError("Fehler: " + escapeHtml(err.message));
+        foldersBody.innerHTML = `<tr><td colspan="3" class="muted">Fehler beim Laden.</td></tr>`;
+        setLoading(false);
+      }
+    }
+
+    function escapeHtml(s) {
+      if (!s) return "";
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+    }
+
+    // Start
+    loadSongFolders();
+    // Optional: Auto-Refresh
+    // setInterval(loadSongFolders, 120000);
+  </script>
+</body>
+</html>
