@@ -36,7 +36,7 @@
     .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 20px #0008;}
     table{width:100%;border-collapse:collapse;margin-top:12px;}
     th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #0008;font-size:0.95rem}
-    th{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:0.75rem;letter-spacing:0.7px}
+    th{color:var(--);font-weight:600;text-transform:uppercase;font-size:0.75rem;letter-spacing:0.7px}
     a.folder-link{color:var(--text);text-decoration:none}
     a.folder-link:hover{text-decoration:underline}
     .muted{color:var(--muted);font-size:0.9rem}
@@ -63,6 +63,7 @@
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
         <div class="center">
           <div id="status" class="muted">Bereit</div>
+          <div id="loader" style="display:none" class="loader" title="Lädt"></div>
         </div>
       </div>
 
