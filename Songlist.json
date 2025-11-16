@@ -3,7 +3,7 @@
     "Songname": "Why'd you only call me when you're high",
     "Interpret": "Arctic Monkeys",
     "Leadsheetbezeichnung": "",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run ***",
     "Spielzeit": "02:41",
     "Bandprobe": "x"
   },
@@ -19,7 +19,7 @@
     "Songname": "Everglow",
     "Interpret": "Coldplay",
     "Leadsheetbezeichnung": "Coldplay - Everglow (Leadsheet).pdf",
-    "Spielstatus": "new",
+    "Spielstatus": "run *",
     "Spielzeit": "04:42",
     "Bandprobe": "x"
   },
@@ -27,7 +27,7 @@
     "Songname": "The Scientist",
     "Interpret": "Coldplay",
     "Leadsheetbezeichnung": "Coldplay - The Scientist (Leadsheet).pdf",
-    "Spielstatus": "new",
+    "Spielstatus": "run **",
     "Spielzeit": "05:09",
     "Bandprobe": ""
   },
@@ -43,7 +43,7 @@
     "Songname": "Boulevard Of Broken Dreams",
     "Interpret": "Green Day",
     "Leadsheetbezeichnung": "Green Day - Boulevard Of Broken Dreams (Leadsheet-OM-Vers.2).pdf",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run ***",
     "Spielzeit": "04:20",
     "Bandprobe": "x"
   },
@@ -59,7 +59,7 @@
     "Songname": "Narcotic",
     "Interpret": "Liquido",
     "Leadsheetbezeichnung": "Liquido - Narcotic (Lead- & Textsheet).pdf",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run ***",
     "Spielzeit": "03:48",
     "Bandprobe": "x"
   },
@@ -67,7 +67,7 @@
     "Songname": "Don't Look Back In Anger",
     "Interpret": "Oasis",
     "Leadsheetbezeichnung": "",
-    "Spielstatus": "new",
+    "Spielstatus": "run *",
     "Spielzeit": "04:47",
     "Bandprobe": ""
   },
@@ -75,7 +75,7 @@
     "Songname": "Supersonic",
     "Interpret": "Oasis",
     "Leadsheetbezeichnung": "Oasis - Don’t Look Back In Anger (Chords).pdf",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run ***",
     "Spielzeit": "04:29",
     "Bandprobe": ""
   },
@@ -83,7 +83,7 @@
     "Songname": "Supergirl",
     "Interpret": "Reamonn",
     "Leadsheetbezeichnung": "Reamonn - Supergirl (Leadsheet-OM-Vers.2).pdf",
-    "Spielstatus": "new",
+    "Spielstatus": "run *",
     "Spielzeit": "03:47",
     "Bandprobe": "x"
   },
@@ -91,7 +91,7 @@
     "Songname": "Californication",
     "Interpret": "Red Hot Chili Peppers",
     "Leadsheetbezeichnung": "",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run **",
     "Spielzeit": "05:21",
     "Bandprobe": "x"
   },
@@ -107,7 +107,7 @@
     "Songname": "Otherside",
     "Interpret": "Red Hot Chili Peppers",
     "Leadsheetbezeichnung": "",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run **",
     "Spielzeit": "04:15",
     "Bandprobe": ""
   },
@@ -115,7 +115,7 @@
     "Songname": "Feel",
     "Interpret": "Robbie Williams",
     "Leadsheetbezeichnung": "Robbie Williams - Feel (Leadsheet OM).pdf",
-    "Spielstatus": "new",
+    "Spielstatus": "run *",
     "Spielzeit": "04:32",
     "Bandprobe": "x"
   },
@@ -131,7 +131,7 @@
     "Songname": "Its been a while",
     "Interpret": "Staind",
     "Leadsheetbezeichnung": "Staind - Its Been Awhile (Leadsheet).pdf",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run **",
     "Spielzeit": "04:25",
     "Bandprobe": ""
   },
@@ -139,7 +139,7 @@
     "Songname": "Rock & Roll Queen",
     "Interpret": "The Subways",
     "Leadsheetbezeichnung": "The Subways - Rock n Roll Queen (Leadsheet-OM-Vers.).pdf",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run *",
     "Spielzeit": "02:53",
     "Bandprobe": ""
   },
@@ -147,7 +147,7 @@
     "Songname": "Seven Nation Army",
     "Interpret": "The White Stripes",
     "Leadsheetbezeichnung": "",
-    "Spielstatus": "läuft",
+    "Spielstatus": "run **",
     "Spielzeit": "03:58",
     "Bandprobe": ""
   },
@@ -155,11 +155,12 @@
     "Songname": "Bitch",
     "Interpret": "Von Wegen Lisbeth",
     "Leadsheetbezeichnung": "",
-    "Spielstatus": "new",
+    "Spielstatus": "run *",
     "Spielzeit": "03:44",
     "Bandprobe": ""
   }
 ]
+
 
 
 
