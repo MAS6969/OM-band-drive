@@ -50,7 +50,9 @@
     .empty { color: var(--border); font-style: italic; }
     .count { font-size: 13px; color: var(--muted); margin-left: 8px; }
     footer { padding: 12px 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
-    @media (max-width: 720px) { td:nth-child(3) { display:none } }
+    @media (max-width: 720px) {
+      .hide-mobile { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -80,10 +82,10 @@
           <th data-key="Songname">Songname</th>
           <th data-key="Interpret">Interpret</th>
           <th data-key="Spielstatus">Status</th>
-          <th data-key="Bandprobe">Bandprobe</th>          
+          <th data-key="Bandprobe">Bandprobe</th>
           <th data-key="Spielzeit">Spielzeit</th>
-          <th data-key="Leadsheetbezeichnung">Leadsheet</th>
-      </tr>
+          <th data-key="Leadsheetbezeichnung" class="hide-mobile">Leadsheet</th>
+        </tr>
       </thead>
       <tbody></tbody>
     </table>
@@ -94,7 +96,7 @@
   </footer>
 
   <script>
-    const jsonPath = 'Songlist.json'; // JSON-Datei im gleichen Verzeichnis
+    const jsonPath = 'Songlist.json';
     let data = [], sortKey = 'Bandprobe', sortDir = -1;
 
     const tbody = document.querySelector('#table tbody');
@@ -110,64 +112,51 @@
       })
       .then(json => { data = json; render(); })
       .catch(err => {
-        tbody.innerHTML = `<tr><td colspan="4">Fehler beim Laden: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6">Fehler beim Laden: ${err.message}</td></tr>`;
       });
 
-  function render() {
-  const q = (searchEl.value || '').toLowerCase();
-  const st = statusEl.value || '';
-  const filtered = data.filter(row => {
-    const text = (row.Songname + ' ' + row.Interpret).toLowerCase();
-    const statusOk = !st || (row.Spielstatus || '').toLowerCase() === st.toLowerCase();
-    return (!q || text.includes(q)) && statusOk;
-  });
+    function render() {
+      const q = (searchEl.value || '').toLowerCase();
+      const st = statusEl.value || '';
+      const filtered = data.filter(row => {
+        const text = (row.Songname + ' ' + row.Interpret).toLowerCase();
+        const statusOk = !st || (row.Spielstatus || '').toLowerCase() === st.toLowerCase();
+        return (!q || text.includes(q)) && statusOk;
+      });
 
-  const sorted = filtered.slice().sort((a, b) => {
-    const av = (a[sortKey] || '').toString().toLowerCase();
-    const bv = (b[sortKey] || '').toString().toLowerCase();
-    return av.localeCompare(bv, 'de') * sortDir;
-  });
+      const sorted = filtered.slice().sort((a, b) => {
+        const av = (a[sortKey] || '').toString().toLowerCase();
+        const bv = (b[sortKey] || '').toString().toLowerCase();
+        return av.localeCompare(bv, 'de') * sortDir;
+      });
 
-  tbody.innerHTML = sorted.map(row => {
-    const ls = row.Leadsheetbezeichnung && row.Leadsheetbezeichnung.trim() !== '' ? row.Leadsheetbezeichnung : '<span class="empty">—</span>';
-    const s = (row.Spielstatus || '').toLowerCase();
-    const badgeClass = s === 'läuft' ? 'b-laeuft'
-                      : s === 'geplant' ? 'b-geplant'
-                      : s === 'backlog' ? 'b-backlog'
-                      : s === 'new' ? 'b-new'
-                      : '';
-    const badge = s ? `<span class="badge ${badgeClass}">${row.Spielstatus}</span>` : '<span class="empty">—</span>';
-    const spielzeit = row.Spielzeit && row.Spielzeit.trim() !== '' ? escapeHtml(row.Spielzeit) : '<span class="empty">—</span>';
-    const bandprobe = row.Bandprobe && row.Bandprobe.trim() !== '' ? escapeHtml(row.Bandprobe) : '<span class="empty">—</span>';
+      tbody.innerHTML = sorted.map(row => {
+        const ls = row.Leadsheetbezeichnung && row.Leadsheetbezeichnung.trim() !== '' ? escapeHtml(row.Leadsheetbezeichnung) : '<span class="empty">—</span>';
+        const s = (row.Spielstatus || '').toLowerCase();
+        const badgeClass = s === 'läuft' ? 'b-laeuft'
+                          : s === 'geplant' ? 'b-geplant'
+                          : s === 'backlog' ? 'b-backlog'
+                          : s === 'new' ? 'b-new'
+                          : '';
+        const badge = s ? `<span class="badge ${badgeClass}">${escapeHtml(row.Spielstatus)}</span>` : '<span class="empty">—</span>';
+        const spielzeit = row.Spielzeit && row.Spielzeit.trim() !== '' ? escapeHtml(row.Spielzeit) : '<span class="empty">—</span>';
+        const bandprobe = row.Bandprobe && row.Bandprobe.trim() !== '' ? escapeHtml(row.Bandprobe) : '<span class="empty">—</span>';
 
-    return `<tr>
-      <td>${escapeHtml(row.Songname || '')}</td>
-      <td>${escapeHtml(row.Interpret || '')}</td>
-      <td>${badge}</td>
-      <td>${bandprobe}</td>      
-      <td>${spielzeit}</td>
-      <td>${ls}</td>
-    </tr>`;
-  }).join('');
+        return `<tr>
+          <td>${escapeHtml(row.Songname || '')}</td>
+          <td>${escapeHtml(row.Interpret || '')}</td>
+          <td>${badge}</td>
+          <td>${bandprobe}</td>
+          <td>${spielzeit}</td>
+          <td class="hide-mobile">${ls}</td>
+        </tr>`;
+      }).join('');
 
-  countEl.textContent = `(${sorted.length} Einträge)`;
-}
-
+      countEl.textContent = `(${sorted.length} Einträge)`;
+    }
 
     searchEl.addEventListener('input', render);
     statusEl.addEventListener('change', render);
 
     ths.forEach(th => {
-      th.addEventListener('click', () => {
-        const key = th.dataset.key;
-        if (sortKey === key) { sortDir *= -1; } else { sortKey = key; sortDir = 1; }
-        render();
-      });
-    });
-
-    function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
-    }
-  </script>
-</body>
-</html>
+      th.add
