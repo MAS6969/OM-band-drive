@@ -80,6 +80,8 @@
           <th data-key="Songname">Songname</th>
           <th data-key="Interpret">Interpret</th>         
           <th data-key="Spielstatus">Status</th>
+          <th data-key="Bandprobe">Bandprobe</th>
+          <th data-key="Spielzeit">Spielzeit</th>
           <th data-key="Leadsheet">Leadsheet</th>
         </tr>
       </thead>
@@ -129,15 +131,20 @@
       tbody.innerHTML = sorted.map(row => {
         const ls = row.Leadsheetbezeichnung && row.Leadsheetbezeichnung.trim() !== '' ? row.Leadsheetbezeichnung : '<span class="empty">—</span>';
         const s = (row.Spielstatus || '').toLowerCase();
-        const badgeClass = s === 'läuft' ? 'b-laeuft'
+        const Class = s === 'läuft' ? 'b-laeuft'
                           : s === 'geplant' ? 'b-geplant'
                           : s === 'backlog' ? 'b-backlog'
                           : s === 'new' ? 'b-new'
                           : '';
         const badge = s ? `<span class="badge ${badgeClass}">${row.Spielstatus}</span>` : '<span class="empty">—</span>';
+        const bandprobe = row.Bandprobe && row.Bandprobe.trim() !== '' ? escapeHtml(row.Bandprobe) : '<span class="empty">—</span>';
+        const spielzeit = row.Spielzeit && row.Spielzeit.trim() !== '' ? escapeHtml(row.Spielzeit) : '<span class="empty">—</span>';
+           
         return `<tr>
           <td>${escapeHtml(row.Songname || '')}</td>
-          <td>${escapeHtml(row.Interpret || '')}</td>          
+          <td>${escapeHtml(row.Interpret || '')}</td>             
+          <td>${bandprobe}</td>
+          <td>${spielzeit}</td>
           <td>${badge}</td>
           <td>${ls}</td>
         </tr>`;
