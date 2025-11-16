@@ -43,10 +43,10 @@
     th { text-align: left; font-weight: 600; color: var(--muted); cursor: pointer; }
     tr:hover { background: #141736; }
     .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
-    .b-laeuft { background: color-mix(in oklab, var(--status-laeuft) 35%, black); color: #c8e6c9; border: 1px solid color-mix(in oklab, var(--status-laeuft) 70%, black); }
-    .b-geplant { background: color-mix(in oklab, var(--status-geplant) 35%, black); color: #bbdefb; border: 1px solid color-mix(in oklab, var(--status-geplant) 70%, black); }
-    .b-backlog { background: color-mix(in oklab, var(--status-backlog) 35%, black); color: #e1bee7; border: 1px solid color-mix(in oklab, var(--status-backlog) 70%, black); }
-    .b-new { background: color-mix(in oklab, var(--status-new) 35%, black); color: #ffe0b2; border: 1px solid color-mix(in oklab, var(--status-new) 70%, black); }
+    .b-backlog { background:#8e24aa; color:#f3e5f5; }   /* lila */
+    .b-run1    { background:#d32f2f; color:#ffcdd2; }   /* rot */
+    .b-run2    { background:#fbc02d; color:#fff9c4; }   /* gelb */
+    .b-run3    { background:#2e7d32; color:#c8e6c9; }   /* grün */        
     .empty { color: var(--border); font-style: italic; }
     .count { font-size: 13px; color: var(--muted); margin-left: 8px; }
     footer { padding: 12px 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
@@ -133,12 +133,33 @@
       tbody.innerHTML = sorted.map(row => {
         const ls = row.Leadsheetbezeichnung && row.Leadsheetbezeichnung.trim() !== '' ? escapeHtml(row.Leadsheetbezeichnung) : '<span class="empty">—</span>';
         const s = (row.Spielstatus || '').toLowerCase();
-        const badgeClass = s === 'läuft' ? 'b-laeuft'
-                          : s === 'geplant' ? 'b-geplant'
-                          : s === 'backlog' ? 'b-backlog'
-                          : s === 'new' ? 'b-new'
-                          : '';
-        const badge = s ? `<span class="badge ${badgeClass}">${escapeHtml(row.Spielstatus)}</span>` : '<span class="empty">—</span>';
+        const sRaw = (row.Spielstatus || '').trim();
+        let s = '';
+        let badgeClass = '';
+
+        switch (sRaw) {
+          case 'backlog':
+            s = 'backlog';
+            badgeClass = 'b-backlog'; // lila
+            break;
+          case 'run *':
+            s = 'draft';
+            badgeClass = 'b-run1';    // rot
+            break;
+          case 'run **':
+            s = 'progress';
+            badgeClass = 'b-run2';    // gelb
+            break;
+          case 'run ***':
+            s = 'stage ready';
+            badgeClass = 'b-run3';    // grün
+            break;
+            default:
+              s = sRaw;
+              badgeClass = '';
+          }
+
+        const badge = s ? `<span class="badge ${badgeClass}">${escapeHtml(s)}</span>` : '<span class="empty">—</span>';
         const spielzeit = row.Spielzeit && row.Spielzeit.trim() !== '' ? escapeHtml(row.Spielzeit) : '<span class="empty">—</span>';
         const bandprobe = row.Bandprobe && row.Bandprobe.trim() !== '' ? escapeHtml(row.Bandprobe) : '<span class="empty">—</span>';
 
