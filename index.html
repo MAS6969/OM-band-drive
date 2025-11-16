@@ -7,34 +7,16 @@
   <style>
     :root {
       --bg: #0f1220; --fg: #e8eaf6; --muted: #b6b9d6;
-      --border: #2a2d43; --accent: #7c9cff;
-      --status-laeuft: #2e7d32; --status-geplant: #1565c0;
-      --status-backlog: #8e24aa; --status-new: #f57c00;
+      --border: #2a2d43;
     }
     body { font-family: system-ui, Segoe UI, Roboto, Arial; background: var(--bg); color: var(--fg); margin: 0; }
     .top-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
     }
-    .logo {
-      height: 80px;
-      width: auto;
-      border-radius: 6px;
-      background: #1a1d2e;
-      padding: 4px;
-    }
-    .title-block h1 {
-      font-size: 22px;
-      margin: 0;
-    }
-    .subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      margin: 4px 0 0;
-    }
+    .logo { height: 80px; width: auto; border-radius: 6px; background: #1a1d2e; padding: 4px; }
+    .title-block h1 { font-size: 22px; margin: 0; }
+    .subtitle { font-size: 14px; color: var(--muted); margin: 4px 0 0; }
     .controls { display: flex; gap: 12px; padding: 12px 20px; flex-wrap: wrap; }
     .controls input, .controls select { background: #151833; color: var(--fg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
     .table-wrap { padding: 0 20px 30px; }
@@ -46,13 +28,11 @@
     .b-backlog { background:#8e24aa; color:#f3e5f5; }   /* lila */
     .b-run1    { background:#d32f2f; color:#ffcdd2; }   /* rot */
     .b-run2    { background:#fbc02d; color:#fff9c4; }   /* gelb */
-    .b-run3    { background:#2e7d32; color:#c8e6c9; }   /* grün */        
+    .b-run3    { background:#2e7d32; color:#c8e6c9; }   /* grün */
     .empty { color: var(--border); font-style: italic; }
     .count { font-size: 13px; color: var(--muted); margin-left: 8px; }
     footer { padding: 12px 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }
-    @media (max-width: 720px) {
-      .hide-mobile { display: none; }
-    }
+    @media (max-width: 720px) { .hide-mobile { display: none; } }
   </style>
 </head>
 <body>
@@ -68,10 +48,10 @@
     <input id="search" type="search" placeholder="Suche: Songname oder Interpret" aria-label="Suche">
     <select id="status">
       <option value="">Status: alle</option>
-      <option value="läuft">läuft</option>
-      <option value="geplant">geplant</option>
       <option value="backlog">backlog</option>
-      <option value="new">new</option>
+      <option value="run *">run *</option>
+      <option value="run **">run **</option>
+      <option value="run ***">run ***</option>
     </select>
   </section>
 
@@ -131,33 +111,26 @@
       });
 
       tbody.innerHTML = sorted.map(row => {
-        const ls = row.Leadsheetbezeichnung && row.Leadsheetbezeichnung.trim() !== '' ? escapeHtml(row.Leadsheetbezeichnung) : '<span class="empty">—</span>';
-        const s = (row.Spielstatus || '').toLowerCase();
+        const ls = row.Leadsheetbezeichnung && row.Leadsheetbezeichnung.trim() !== '' 
+          ? escapeHtml(row.Leadsheetbezeichnung) 
+          : '<span class="empty">—</span>';
+
         const sRaw = (row.Spielstatus || '').trim();
         let s = '';
         let badgeClass = '';
 
         switch (sRaw) {
           case 'backlog':
-            s = 'backlog';
-            badgeClass = 'b-backlog'; // lila
-            break;
+            s = 'backlog'; badgeClass = 'b-backlog'; break;
           case 'run *':
-            s = 'draft';
-            badgeClass = 'b-run1';    // rot
-            break;
+            s = 'draft'; badgeClass = 'b-run1'; break;
           case 'run **':
-            s = 'progress';
-            badgeClass = 'b-run2';    // gelb
-            break;
+            s = 'progress'; badgeClass = 'b-run2'; break;
           case 'run ***':
-            s = 'stage ready';
-            badgeClass = 'b-run3';    // grün
-            break;
-            default:
-              s = sRaw;
-              badgeClass = '';
-          }
+            s = 'stage ready'; badgeClass = 'b-run3'; break;
+          default:
+            s = sRaw; badgeClass = '';
+        }
 
         const badge = s ? `<span class="badge ${badgeClass}">${escapeHtml(s)}</span>` : '<span class="empty">—</span>';
         const spielzeit = row.Spielzeit && row.Spielzeit.trim() !== '' ? escapeHtml(row.Spielzeit) : '<span class="empty">—</span>';
